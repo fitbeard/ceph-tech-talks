@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-identity-webhook
+  namespace: pod-identity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-identity-webhook
+  template:
+    metadata:
+      labels:
+        app: pod-identity-webhook
+    spec:
+      serviceAccountName: pod-identity-webhook
+      containers:
+      - name: pod-identity-webhook
+        image: ceph-tech-talks/kubernetes-pod-sts-identity-webhook:ceph-tech-talks
+        imagePullPolicy: IfNotPresent
+        command:
+        - /webhook
+        - --in-cluster=false
+        - --namespace=pod-identity
+        - --service-name=pod-identity-webhook
+        - --annotation-prefix=s3.vexxhost.dev
+        - --token-mount-path=/var/run/secrets/s3.vexxhost.dev/serviceaccount
+        - --token-audience=custom
+        - --endpoint-url=https://storage.example.local
+        - --allow-non-aws-account-id=true
+        - --logtostderr
+        - --v=7
+        volumeMounts:
+        - name: cert
+          mountPath: "/etc/webhook/certs"
+          readOnly: true
+      volumes:
+      - name: cert
+        secret:
+          secretName: pod-identity-webhook-cert
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: pod-identity-webhook
+  namespace: pod-identity
+spec:
+  secretName: pod-identity-webhook-cert
+  commonName: "pod-identity-webhook.pod-identity.svc"
+  dnsNames:
+  - "pod-identity-webhook"
+  - "pod-identity-webhook.pod-identity"
+  - "pod-identity-webhook.pod-identity.svc"
+  - "pod-identity-webhook.pod-identity.svc.local"
+  isCA: true
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  issuerRef:
+    name: selfsigned
+    kind: ClusterIssuer

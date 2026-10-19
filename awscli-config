@@ -1,0 +1,62 @@
+[profile test]
+radosgw_oidc_provider  = https://keycloak.example.local/realms/rgw
+radosgw_oidc_client_id = rgw-client-public
+radosgw_oidc_auth_type = device
+radosgw_oidc_scope     = openid offline_access
+radosgw_ssl_verify     = false
+
+[profile role-assume]
+endpoint_url   = https://storage.example.local
+role_arn       = arn:aws:iam:::role/examples/KeycloakExample
+source_profile = test
+
+[profile role-browser]
+endpoint_url           = https://storage.example.local
+role_arn               = arn:aws:iam:::role/examples/KeycloakExample
+source_profile         = test
+radosgw_oidc_client_id = rgw-client-public-browser
+radosgw_oidc_auth_type = browser
+
+[profile full]
+endpoint_url           = https://storage.example.local
+radosgw_oidc_provider  = https://keycloak.example.local/realms/rgw
+radosgw_oidc_client_id = rgw-client-public
+radosgw_oidc_auth_type = device
+radosgw_ssl_verify     = false
+role_arn               = arn:aws:iam:::role/examples/KeycloakExample
+
+[profile sunrise-acc-rw-browser]
+endpoint_url           = https://storage.example.local
+radosgw_oidc_provider  = https://keycloak.example.local/realms/demo
+radosgw_oidc_client_id = rgw-client-public-browser
+radosgw_oidc_auth_type = browser
+radosgw_ssl_verify     = false
+role_arn               = arn:aws:iam::RGW77777777777777777:role/sunrise-roles/SunriseReadWrite
+
+[profile sunrise-acc-rw-browser-sdk]
+credential_process = /opt/homebrew/bin/radosgw-assume credential-process -v -d 1h -p sunrise-acc-rw-browser
+endpoint_url       = https://storage.example.local
+
+[profile sunrise-acc-rw-device]
+endpoint_url           = https://storage.example.local
+radosgw_oidc_provider  = https://keycloak.example.local/realms/demo
+radosgw_oidc_client_id = rgw-client-public-browser
+radosgw_oidc_auth_type = device
+radosgw_ssl_verify     = false
+role_arn               = arn:aws:iam::RGW77777777777777777:role/sunrise-roles/SunriseReadWrite
+
+[profile sunrise-acc2-ro]
+endpoint_url           = https://storage.example.local
+radosgw_oidc_provider  = https://keycloak.example.local/realms/demo
+radosgw_oidc_client_id = rgw-client-public-browser
+radosgw_oidc_auth_type = browser
+radosgw_ssl_verify     = false
+role_arn               = arn:aws:iam::RGW97317822198395516:role/sunrise-roles/SunriseReadOnly
+
+[profile sunrise-acc2-rw]
+endpoint_url           = https://storage.example.local
+radosgw_oidc_provider  = https://keycloak.example.local/realms/demo
+radosgw_oidc_client_id = rgw-client-public-browser
+radosgw_oidc_auth_type = browser
+radosgw_ssl_verify     = false
+role_arn               = arn:aws:iam::RGW97317822198395516:role/sunrise-roles/SunriseReadWrite

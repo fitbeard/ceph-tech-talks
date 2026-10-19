@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: awscli
+  labels:
+    app: awscli
+  namespace: ceph-sts-demo
+spec:
+  serviceAccountName: demo
+  containers:
+    - name: awscli
+      image: ceph-tech-talks/demo:ceph-tech-talks
+      imagePullPolicy: IfNotPresent
+      command: ["sleep", "infinity"]
+      stdin: true
+      tty: true
+      resources:
+        requests: {cpu: 50m, memory: 64Mi}
+        limits: {memory: 256Mi}
+  restartPolicy: Always
